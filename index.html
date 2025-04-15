@@ -1,118 +1,121 @@
 <!DOCTYPE html>
-<html lang="en-US">
-  <head>
-    <meta charset="utf-8">
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Juego de Adivina el Número</title>
 
-    <title>Number guessing game</title>
+  <style>
+    html {
+      font-family: sans-serif;
+    }
 
-    <style>
-      html {
-        font-family: sans-serif;
+    body {
+      width: 50%;
+      max-width: 800px;
+      min-width: 480px;
+      margin: 0 auto;
+    }
+
+    .formulario input[type="number"] {
+      width: 200px;
+    }
+
+    .resultadoFinal {
+      color: white;
+      padding: 3px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Juego de Adivina el Número</h1>
+
+  <p>Hemos seleccionado un número aleatorio entre 1 y 100. A ver si puedes adivinarlo en 10 turnos o menos. Te diremos si tu acierto fue demasiado alto o demasiado bajo.</p>
+
+  <div class="formulario">
+    <label for="campoRespuesta">Pon tu respuesta: </label>
+    <input type="number" min="1" max="100" required id="campoRespuesta" class="campoRespuesta">
+    <input type="submit" value="Enviar respuesta" class="enviarRespuesta">
+  </div>
+
+  <div class="resultados">
+    <p class="respuestas"></p>
+    <p class="resultadoFinal"></p>
+    <p class="altoObajo"></p>
+  </div>
+
+  <script>
+    let numeroAleatorio = Math.floor(Math.random() * 100) + 1;
+    const respuestas = document.querySelector('.respuestas');
+    const resultadoFinal = document.querySelector('.resultadoFinal');
+    const altoObajo = document.querySelector('.altoObajo');
+    const enviarRespuesta = document.querySelector('.enviarRespuesta');
+    const campoRespuesta = document.querySelector('.campoRespuesta');
+    let intentos = 1;
+    let botonReinicio;
+
+    function comprobarRespuesta() {
+      const intentoUsuario = Number(campoRespuesta.value);
+
+      if (intentos === 1) {
+        respuestas.textContent = 'Respuestas previas: ';
       }
 
-      body {
-        width: 50%;
-        max-width: 800px;
-        min-width: 480px;
-        margin: 0 auto;
-      }
-      
-      .form input[type="number"] {
-        width: 200px;
-      }
+      respuestas.textContent += ` ${intentoUsuario}`;
 
-      .lastResult {
-        color: white;
-        padding: 3px;
-      }
-    </style>
-  </head>
+      if (intentoUsuario === numeroAleatorio) {
+        resultadoFinal.textContent = '¡Felicidades! ¡Has acertado!';
+        resultadoFinal.style.backgroundColor = 'green';
+        altoObajo.textContent = '';
+        finalizarJuego();
+      } else if (intentos === 10) {
+        resultadoFinal.textContent = '¡Juego terminado!';
+        altoObajo.textContent = '';
+        finalizarJuego();
+      } else {
+        resultadoFinal.textContent = '¡Incorrecto!';
+        resultadoFinal.style.backgroundColor = 'red';
 
-  <body>
-    <h1>Juego de Adivina el Numero</h1>
-
-    <p>Hemos seleccionado un número aleatorio entre 1 y 100. A ver si puedes adivinarlo en 10 turnos o menos. Te diremos si tu acierto fue demasiado alto o demasiado bajo.</p>
-
-    <div class="form">
-      <label for="guessField">Pon tu respuesta: </label>
-      <input type="number" min="1" max="100" required id="guessField" class="guessField">
-      <input type="submit" value="Envia tu respuesta" class="guessSubmit">
-    </div>
-
-    <div class="resultParas">
-      <p class="guesses"></p>
-      <p class="lastResult"></p>
-      <p class="lowOrHi"></p>
-    </div>
-
-    <script>
-      let randomNumber = Math.floor(Math.random() * 100) + 1;
-      const guesses = document.querySelector('.guesses');
-      const lastResult = document.querySelector('.lastResult');
-      const lowOrHi = document.querySelector('.lowOrHi');
-      const guessSubmit = document.querySelector('.guessSubmit');
-      const guessField = document.querySelector('.guessField');
-      let guessCount = 1;
-      let resetButton;
-
-      function checkGuess() {
-        const userGuess = Number(guessField.value);
-        if (guessCount === 1) {
-          guesses.textContent = 'Respuestas previas: ';
-        }
-
-        guesses.textContent = `${guesses.textContent} ${userGuess}`;
-
-        if (userGuess === randomNumber) {
-          lastResult.textContent = 'Felicidades! Tienes razon!';
-          lastResult.style.backgroundColor = 'verde';
-          lowOrHi.textContent = '';
-          setGameOver();
-        } else if (guessCount === 10) {
-          lastResult.textContent = '!!!JUEGO FINALIZADO!!!';
-          lowOrHi.textContent = '';
-          setGameOver();
+        if (intentoUsuario < numeroAleatorio) {
+          altoObajo.textContent = '¡Tu respuesta fue demasiado baja!';
         } else {
-          lastResult.textContent = 'Equivocado!';
-          lastResult.style.backgroundColor = 'red';
-          if(userGuess < randomNumber) {
-            lowOrHi.textContent = 'Ultima respuesta es muy baja!' ;
-          } else if(userGuess > randomNumber) {
-            lowOrHi.textContent = 'Ultima respuesta es muy alta!';
-          }
+          altoObajo.textContent = '¡Tu respuesta fue demasiado alta!';
         }
-
-        guessCount++;
-        guessField.value = '';
-        guessField.focus();
       }
 
-      guessSubmit.addEventListener('click', checkGuess);
+      intentos++;
+      campoRespuesta.value = '';
+      campoRespuesta.focus();
+    }
 
-      function setGameOver() {
-        guessField.disabled = true;
-        guessSubmit.disabled = true;
-        resetButton = document.createElement('button');
-        resetButton.textContent = 'Empezar nuevo juego';
-        document.body.appendChild(resetButton);
-        resetButton.addEventListener('click', resetGame);
+    enviarRespuesta.addEventListener('click', comprobarRespuesta);
+
+    function finalizarJuego() {
+      campoRespuesta.disabled = true;
+      enviarRespuesta.disabled = true;
+      botonReinicio = document.createElement('button');
+      botonReinicio.textContent = 'Empezar nuevo juego';
+      document.body.appendChild(botonReinicio);
+      botonReinicio.addEventListener('click', reiniciarJuego);
+    }
+
+    function reiniciarJuego() {
+      intentos = 1;
+      const parrafos = document.querySelectorAll('.resultados p');
+      for (const parrafo of parrafos) {
+        parrafo.textContent = '';
       }
 
-      function resetGame() {
-        guessCount = 1;
-        const resetParas = document.querySelectorAll('.resultParas p');
-        for (const resetPara of resetParas) {
-          resetPara.textContent = '';
-        }
+      botonReinicio.parentNode.removeChild(botonReinicio);
 
-        resetButton.parentNode.removeChild(resetButton);
-        guessField.disabled = false;
-        guessSubmit.disabled = false;
-        guessField.value = '';
-        guessField.focus();
-        lastResult.style.backgroundColor = 'white';
-        randomNumber = Math.floor(Math.random() * 100) + 1;
-      }
-    </script>
-  </body>
+      campoRespuesta.disabled = false;
+      enviarRespuesta.disabled = false;
+      campoRespuesta.value = '';
+      campoRespuesta.focus();
+
+      resultadoFinal.style.backgroundColor = 'white';
+      numeroAleatorio = Math.floor(Math.random() * 100) + 1;
+    }
+  </script>
+</body>
 </html>
